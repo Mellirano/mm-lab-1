@@ -1,0 +1,103 @@
+package ua.udunt.mm.methods;
+
+import ua.udunt.mm.model.FunctionSystem;
+import ua.udunt.mm.util.JacobianUtil;
+
+/**
+ * Implements the Simple Iteration Method for solving nonlinear systems of equations.
+ */
+public class SimpleIterationMethod {
+
+    private static final String ITERATION_HEADER =
+            "Iter |       x[i]        |      delta[x[i]]       |     F[i]        |   ||delta[x]||   |   ||F||   ";
+    private static final String ITERATION_DIVIDER =
+            "-----+-------------------+------------------+------------------+-----------+----------";
+
+    /**
+     * Solves the system using the simple iteration method.
+     *
+     * @param system       the function system to solve
+     * @param initialGuess the initial guess for the variables
+     * @param eps          the convergence tolerance
+     * @param maxIter      the maximum number of iterations
+     * @return the computed solution vector
+     */
+    public static double[] solve(FunctionSystem system, double[] initialGuess, double eps, int maxIter) {
+        int n = system.size();
+        double[] currentX = initialGuess.clone();
+        double[] previousX = new double[n];
+        double[] residuals;
+
+        JacobianUtil.checkConvergence(system, currentX);
+
+        System.out.println(ITERATION_HEADER);
+        System.out.println(ITERATION_DIVIDER);
+
+        for (int iter = 0; iter < maxIter; iter++) {
+            System.arraycopy(currentX, 0, previousX, 0, n);
+            currentX = system.evaluate(previousX);
+            residuals = computeResidualsAndDeltaX(currentX, previousX, n);
+
+            double normDeltaX = norm(residuals);
+            double normResiduals = norm(residuals);
+
+            printIterationInfo(iter + 1, currentX, residuals, residuals, normDeltaX, normResiduals);
+
+            if (normDeltaX < eps && normResiduals < eps) {
+                System.out.println("Convergence achieved");
+                break;
+            }
+        }
+        return currentX;
+    }
+
+    /**
+     * Computes the difference between current and previous values (delta x) and uses it as residuals.
+     *
+     * @param currentX  current approximation
+     * @param previousX previous approximation
+     * @param size      system size
+     * @return the residual vector
+     */
+    private static double[] computeResidualsAndDeltaX(double[] currentX, double[] previousX, int size) {
+        double[] residuals = new double[size];
+        for (int i = 0; i < size; i++) {
+            residuals[i] = currentX[i] - previousX[i];
+        }
+        return residuals;
+    }
+
+    /**
+     * Prints formatted output of current iteration data.
+     *
+     * @param iteration     current iteration number
+     * @param x             current x values
+     * @param deltaX        change in x
+     * @param residuals     function residuals
+     * @param normDeltaX    norm of Δx
+     * @param normResiduals norm of residuals
+     */
+    private static void printIterationInfo(int iteration, double[] x, double[] deltaX, double[] residuals,
+                                           double normDeltaX, double normResiduals) {
+        System.out.printf("%3d |", iteration);
+        for (double xi : x) System.out.printf(" %+9.5f", xi);
+        System.out.print(" |");
+        for (double dxi : deltaX) System.out.printf(" %+9.5f", dxi);
+        System.out.print(" |");
+        for (double fi : residuals) System.out.printf(" %+9.5f", fi);
+        System.out.printf(" | %+9.5f | %+9.5f%n", normDeltaX, normResiduals);
+    }
+
+    /**
+     * Calculates the Euclidean norm of a vector.
+     *
+     * @param v the vector
+     * @return the L2 norm
+     */
+    private static double norm(double[] v) {
+        double sum = 0.0;
+        for (double val : v) sum += val * val;
+        return Math.sqrt(sum);
+    }
+
+}
