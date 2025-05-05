@@ -16,14 +16,15 @@ public class EquationSolverApplication {
 
     private static final FunctionSystem ITERATION_SYSTEM = new FunctionSystem() {
         @Override
-        public double[] evaluate(double[] x) {
-            double x1 = x[0]; // x
-            double x2 = x[1]; // y
+        public double[] evaluate(double[] initialGuess) {
+            double x = initialGuess[0]; // x
+            double y = initialGuess[1]; // y
 
-            //Canonical
-            double f1 = (2 - Math.cos(x2)) / 2;
-            double f2 = Math.sin(x1 + 1) - 1.2;
-            return new double[]{f1, f2};
+            //Canonical form
+            double x1 = (2 - Math.cos(y)) / 2;
+            double y2 = Math.sin(x + 1) - 1.2;
+
+            return new double[]{x1, y2};
         }
 
         @Override
@@ -34,14 +35,14 @@ public class EquationSolverApplication {
 
     private static final FunctionSystem EQUATION_SYSTEM = new FunctionSystem() {
         @Override
-        public double[] evaluate(double[] x) {
-            double x1 = x[0]; // x
-            double x2 = x[1]; // y
+        public double[] evaluate(double[] initialGuess) {
+            double x = initialGuess[0]; // x
+            double y = initialGuess[1]; // y
 
-            double f1 = Math.tan(x1 * x2 + 0.4) - Math.pow(x1, 2);
-            double f2 = 0.06 * Math.pow(x1, 2) + 2 * Math.pow(x1, 2) - 1;
+            double x1 = Math.tan(x * y + 0.4) - Math.pow(x, 2);
+            double y2 = 0.06 * Math.pow(x, 2) + 2 * Math.pow(x, 2) - 1;
 
-            return new double[]{f1, f2};
+            return new double[]{x1, y2};
         }
 
         @Override
@@ -49,7 +50,6 @@ public class EquationSolverApplication {
             return 2;
         }
     };
-
 
     public static void main(String[] args) {
         System.out.println("=== Task 1 ===");

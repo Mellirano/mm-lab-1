@@ -9,7 +9,7 @@ import ua.udunt.mm.model.FunctionSystem;
 public class JacobianUtil {
 
     private static final double STEP_SIZE = 0.000001;
-    private static final String FORMAT_CONVERGENCE_MESSAGE = "||J||_∞ = %.6f → %s%n";
+    private static final String FORMAT_CONVERGENCE_MESSAGE = "||J|| = %.6f -> %s%n";
 
     /**
      * Computes the Jacobian matrix for a given system of functions at a specified point.

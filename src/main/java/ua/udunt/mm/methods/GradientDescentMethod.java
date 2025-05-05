@@ -25,7 +25,7 @@ public class GradientDescentMethod {
      * Tolerance for the objective function value (P(x)).
      * <p>
      * If the squared residual sum becomes smaller than this threshold,
-     * the current solution is considered a accurate enough approximation
+     * the current solution is considered an accurate enough approximation
      * of the root of the system.
      * <p>
      * Typical value: 1e-6 (0.000001)
@@ -71,17 +71,17 @@ public class GradientDescentMethod {
      * @return solution vector x that approximately minimizes P(x)
      */
     public static double[] solve(FunctionSystem system, double[] initialGuess, double initialLambda, double decayRate, int maxIterations) {
-        int variableCount = system.size();
-        double[] currentSolution = initialGuess.clone();
-        double currentObjective = objective(system, currentSolution);
-        double[] gradient = gradient(system, currentSolution);
+        int systemSize = system.size();
+        double[] currentX = initialGuess.clone();
+        double currentObjective = objective(system, currentX);
+        double[] gradient = gradient(system, currentX);
         double gradientNorm = norm(gradient);
 
         printHeader();
 
         int iteration = 0;
-        double[] deltaX = new double[variableCount];
-        printIteration(iteration, currentSolution, deltaX, 0.0, gradient, gradientNorm, currentObjective);
+        double[] deltaX = new double[systemSize];
+        printIteration(iteration, currentX, deltaX, 0.0, gradient, gradientNorm, currentObjective);
 
         while (iteration < maxIterations) {
             if (gradientNorm < TOL_GRAD || Math.abs(currentObjective) < TOL_P) {
@@ -89,34 +89,34 @@ public class GradientDescentMethod {
             }
 
             double lambda = initialLambda;
-            deltaX = new double[variableCount];
+            deltaX = new double[systemSize];
             double[] newSolution;
             double newObjective;
 
             // Backtracking line search
             do {
-                newSolution = calculateNewSolution(currentSolution, gradient, lambda, deltaX);
+                newSolution = calculateNewSolution(currentX, gradient, lambda, deltaX);
                 newObjective = objective(system, newSolution);
                 lambda *= decayRate;
             } while (newObjective >= currentObjective && lambda >= MIN_LAMBDA);
 
             if (lambda < MIN_LAMBDA) break;
 
-            double[] oldSolution = currentSolution.clone();
-            currentSolution = newSolution;
+            double[] oldSolution = currentX.clone();
+            currentX = newSolution;
             currentObjective = newObjective;
-            gradient = gradient(system, currentSolution);
+            gradient = gradient(system, currentX);
             gradientNorm = norm(gradient);
             iteration++;
 
-            printIteration(iteration, currentSolution, deltaX, lambda, gradient, gradientNorm, currentObjective);
+            printIteration(iteration, currentX, deltaX, lambda, gradient, gradientNorm, currentObjective);
 
-            double[] solutionDifference = calculateDifference(currentSolution, oldSolution);
+            double[] solutionDifference = calculateDifference(currentX, oldSolution);
             if (norm(solutionDifference) < TOL_X) break;
         }
 
         System.out.println("Convergence achieved");
-        return currentSolution;
+        return currentX;
     }
 
     /**

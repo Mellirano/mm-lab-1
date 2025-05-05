@@ -24,9 +24,9 @@ public class SeidelMethod {
      * @return the computed solution vector
      */
     public static double[] solve(FunctionSystem system, double[] initialGuess, double eps, int maxIter) {
-        int n = system.size();
+        int systemSize = system.size();
         double[] currentX = initialGuess.clone();
-        double[] previousX = new double[n];
+        double[] previousX = new double[systemSize];
         double[] residuals;
 
         JacobianUtil.checkConvergence(system, currentX);
@@ -34,9 +34,9 @@ public class SeidelMethod {
         System.out.println(ITERATION_DIVIDER);
 
         for (int iter = 0; iter < maxIter; iter++) {
-            System.arraycopy(currentX, 0, previousX, 0, n);
-            updateSolution(system, currentX, n);
-            residuals = computeResidualsAndDeltaX(currentX, previousX, n);
+            System.arraycopy(currentX, 0, previousX, 0, systemSize);
+            updateSolution(system, currentX, systemSize);
+            residuals = computeResidualsAndDeltaX(currentX, previousX, systemSize);
 
             double normDeltaX = norm(residuals);
             double normResiduals = norm(residuals);
@@ -56,12 +56,12 @@ public class SeidelMethod {
      * Updates the solution vector using the Gauss–Seidel approach:
      * each new value is used immediately in later calculations.
      *
-     * @param system   the function system
-     * @param currentX the current solution vector, updated in-place
-     * @param size     the number of variables
+     * @param system     the function system
+     * @param currentX   the current solution vector, updated in-place
+     * @param systemSize the number of variables
      */
-    private static void updateSolution(FunctionSystem system, double[] currentX, int size) {
-        for (int i = 0; i < size; i++) {
+    private static void updateSolution(FunctionSystem system, double[] currentX, int systemSize) {
+        for (int i = 0; i < systemSize; i++) {
             double[] tempX = currentX.clone();
             double[] functionResults = system.evaluate(tempX);
             currentX[i] = functionResults[i];
@@ -72,14 +72,14 @@ public class SeidelMethod {
      * Computes the difference between current and previous approximations
      * and returns it as residuals.
      *
-     * @param currentX  current approximation
-     * @param previousX previous approximation
-     * @param size      number of variables
+     * @param currentX   current approximation
+     * @param previousX  previous approximation
+     * @param systemSize number of variables
      * @return residuals vector (delta x)
      */
-    private static double[] computeResidualsAndDeltaX(double[] currentX, double[] previousX, int size) {
-        double[] residuals = new double[size];
-        for (int i = 0; i < size; i++) {
+    private static double[] computeResidualsAndDeltaX(double[] currentX, double[] previousX, int systemSize) {
+        double[] residuals = new double[systemSize];
+        for (int i = 0; i < systemSize; i++) {
             residuals[i] = currentX[i] - previousX[i];
         }
         return residuals;

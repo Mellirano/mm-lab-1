@@ -23,9 +23,9 @@ public class SimpleIterationMethod {
      * @return the computed solution vector
      */
     public static double[] solve(FunctionSystem system, double[] initialGuess, double eps, int maxIter) {
-        int n = system.size();
+        int systemSize = system.size();
         double[] currentX = initialGuess.clone();
-        double[] previousX = new double[n];
+        double[] previousX = new double[systemSize];
         double[] residuals;
 
         JacobianUtil.checkConvergence(system, currentX);
@@ -34,9 +34,9 @@ public class SimpleIterationMethod {
         System.out.println(ITERATION_DIVIDER);
 
         for (int iter = 0; iter < maxIter; iter++) {
-            System.arraycopy(currentX, 0, previousX, 0, n);
+            System.arraycopy(currentX, 0, previousX, 0, systemSize);
             currentX = system.evaluate(previousX);
-            residuals = computeResidualsAndDeltaX(currentX, previousX, n);
+            residuals = computeResidualsAndDeltaX(currentX, previousX, systemSize);
 
             double normDeltaX = norm(residuals);
             double normResiduals = norm(residuals);
@@ -54,14 +54,14 @@ public class SimpleIterationMethod {
     /**
      * Computes the difference between current and previous values (delta x) and uses it as residuals.
      *
-     * @param currentX  current approximation
-     * @param previousX previous approximation
-     * @param size      system size
+     * @param currentX   current approximation
+     * @param previousX  previous approximation
+     * @param systemSize system size
      * @return the residual vector
      */
-    private static double[] computeResidualsAndDeltaX(double[] currentX, double[] previousX, int size) {
-        double[] residuals = new double[size];
-        for (int i = 0; i < size; i++) {
+    private static double[] computeResidualsAndDeltaX(double[] currentX, double[] previousX, int systemSize) {
+        double[] residuals = new double[systemSize];
+        for (int i = 0; i < systemSize; i++) {
             residuals[i] = currentX[i] - previousX[i];
         }
         return residuals;
